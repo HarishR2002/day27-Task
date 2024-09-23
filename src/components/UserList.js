@@ -16,13 +16,23 @@ const UserList = () => {
     setUsers(response.data);
   };
 
+  // Prevent adding users without valid inputs
   const handleAddUser = async () => {
+    if (!newUser.name || !newUser.email) {
+      alert('Please provide a valid name and email.');
+      return;
+    }
     const response = await addUser(newUser);
     setUsers([...users, response.data]);
     setNewUser({ name: '', email: '' });
   };
 
+  // Edit existing user
   const handleEditUser = async (id) => {
+    if (!selectedUser.name || !selectedUser.email) {
+      alert('Please provide valid data to edit.');
+      return;
+    }
     const response = await editUser(id, selectedUser);
     setUsers(users.map(user => user.id === id ? response.data : user));
     setEditMode(false);
@@ -42,6 +52,8 @@ const UserList = () => {
   return (
     <div className="container">
       <h1>User Management</h1>
+
+      {/* Form for adding new users */}
       <div className="user-form">
         <input
           type="text"
@@ -58,6 +70,7 @@ const UserList = () => {
         <button onClick={handleAddUser}>Add User</button>
       </div>
 
+      {/* User list and editing options */}
       <ul>
         {users.map(user => (
           <li key={user.id}>
@@ -74,6 +87,10 @@ const UserList = () => {
                   onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
                 />
                 <button onClick={() => handleEditUser(user.id)}>Save</button>
+                <button onClick={() => {
+                  setEditMode(false);
+                  setSelectedUser(null);
+                }}>Cancel</button>
               </>
             ) : (
               <>
